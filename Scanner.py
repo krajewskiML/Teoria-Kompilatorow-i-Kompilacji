@@ -27,20 +27,13 @@ class Scanner:
                 self.parseUnparsedCharacters()
 
         # not enough closing parenthesis
-        availableClosing = 0
-        for token in self.parsed_tokens:
-            if token.value == "(":
-                availableClosing += 1
-            if token.value == ")":
-                availableClosing -= 1
-
-        if availableClosing > 0:
+        if self.parenthesis_ratio:
             raise Exception(
                 f"Opened parenthesis have not been closed at index {len(characters)}!"
             )
 
         # last char is sign
-        if self.parsed_tokens[-1].value in ("-", "+", "*", "/"):
+        if self.parsed_tokens[-1].value in ("-", "+", "*", "/", "="):
             raise Exception(
                 f"{self.parsed_tokens[-1].value} cannot be placed at the end of an expression"
             )
@@ -48,24 +41,36 @@ class Scanner:
     def scan(self, character: str, index: int):
         if character.isnumeric():
             self.scanNumeric(character, index)
-        if character == "-":
+        elif character.isalpha():
+            self.scanVariable(character, index)
+        elif character == "-":
             self.scanSubtraction(index)
-        if character == "+":
+        elif character == "+":
             self.scanAddition(index)
-        if character == "*":
+        elif character == "*":
             self.scanMultiplication(index)
-        if character == "/":
+        elif character == "/":
             self.scanDivision(index)
-        if character == "(":
+        elif character == "(":
             self.scanOpenParenthesis(index)
-        if character == ")":
+        elif character == ")":
             self.scanCloseParenthesis(index)
+        elif character == "=":
+            self.scanEquals(index)
+        else:
+            raise Exception(f'Unknown character at index {index}')
+
 
     def scanNumeric(self, numeric_character: str, index: int):
-        if len(self.parsed_tokens) > 0 and self.parsed_tokens[-1].value == ")":
-            raise Exception(
-                f"Cannot place an integer after a closed parenthesis at index {index}"
-            )
+        if len(self.parsed_tokens) > 0:
+            if self.parsed_tokens[-1].value == ")":
+                raise Exception(
+                    f"Cannot place an integer after a closed parenthesis at index {index}"
+                )
+            if self.parsed_tokens[-1].token_tag == 'variable':
+                raise Exception(
+                    f"Cannot place an integer after a variable at index {index}"
+                )
         self.unparsed_characters.append(numeric_character)
 
     def scanSubtraction(self, index: int):
@@ -110,7 +115,7 @@ class Scanner:
                 raise Exception(
                     f"+ sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                 )
-            elif self.parsed_tokens[-1].value == ")":
+            elif self.parsed_tokens[-1].value == ")" or self.parsed_tokens[-1].token_tag == 'variable':
                 self.parsed_tokens.append(Token("sign", "+"))
                 return
 
@@ -159,7 +164,7 @@ class Scanner:
             if len(self.parsed_tokens) > 0:
                 if self.parsed_tokens[-1].value not in ("(", "+", "-", "*", "/", ")"):
                     raise Exception(
-                        f"( sign cannot be placed after an integer at index {index}"
+                        f"( sign cannot be placed after a(n) {self.parsed_tokens[-1].token_tag} at index {index}"
                     )
                 elif self.parsed_tokens[-1].value == ")":
                     raise Exception(
@@ -189,14 +194,7 @@ class Scanner:
                     f") sign cannot be placed directly after '(' sign without an expression between them at index {index}"
                 )
 
-        availableClosing = 0
-        for token in self.parsed_tokens:
-            if token.value == "(":
-                availableClosing += 1
-            if token.value == ")":
-                availableClosing -= 1
-
-        isClosingPossible = availableClosing > 0
+        isClosingPossible = self.parenthesis_ratio > 0
         if isClosingPossible is False:
             raise Exception(
                 f"cannot close a parenthesis that has not been started at index {index}"
@@ -212,7 +210,7 @@ class Scanner:
                     self.parsed_tokens.append(Token("sign", ")"))
                     return
             else:
-                if self.parsed_tokens[-1].value != ")":
+                if self.parsed_tokens[-1].value != ")" and self.parsed_tokens[-1].token_tag != 'variable':
                     raise Exception(
                         f"')' sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                     )
