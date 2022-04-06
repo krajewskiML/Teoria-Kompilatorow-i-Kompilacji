@@ -60,8 +60,7 @@ class Scanner:
         elif character == "=":
             self.scanEquals(index)
         else:
-            raise Exception(f'Unknown character at index {index}')
-
+            raise Exception(f"Unknown character at index {index}")
 
     def scanNumeric(self, numeric_character: str, index: int):
         if len(self.parsed_tokens) > 0:
@@ -69,7 +68,7 @@ class Scanner:
                 raise Exception(
                     f"Cannot place an integer after a closed parenthesis at index {index}"
                 )
-            if self.parsed_tokens[-1].token_tag == 'variable':
+            if self.parsed_tokens[-1].token_tag == "variable":
                 raise Exception(
                     f"Cannot place an integer after a variable at index {index}"
                 )
@@ -117,7 +116,10 @@ class Scanner:
                 raise Exception(
                     f"+ sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                 )
-            elif self.parsed_tokens[-1].value == ")" or self.parsed_tokens[-1].token_tag == 'variable':
+            elif (
+                self.parsed_tokens[-1].value == ")"
+                or self.parsed_tokens[-1].token_tag == "variable"
+            ):
                 self.parsed_tokens.append(Token("sign", "+"))
                 return
 
@@ -137,7 +139,10 @@ class Scanner:
                 raise Exception(
                     f"* sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                 )
-            elif self.parsed_tokens[-1].value == ")" or self.parsed_tokens[-1].token_tag == 'variable':
+            elif (
+                self.parsed_tokens[-1].value == ")"
+                or self.parsed_tokens[-1].token_tag == "variable"
+            ):
                 self.parsed_tokens.append(Token("sign", "*"))
                 return
 
@@ -157,7 +162,10 @@ class Scanner:
                 raise Exception(
                     f"/ sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                 )
-            elif self.parsed_tokens[-1].value in ")" or self.parsed_tokens[-1].token_tag == 'variable':
+            elif (
+                self.parsed_tokens[-1].value in ")"
+                or self.parsed_tokens[-1].token_tag == "variable"
+            ):
                 self.parsed_tokens.append(Token("sign", "/"))
                 return
 
@@ -172,13 +180,13 @@ class Scanner:
                     raise Exception(
                         f"( sign cannot be placed after ')' sign at index {index}"
                     )
-            self.parsed_tokens.append(Token("Parenthesis", "("))
+            self.parsed_tokens.append(Token("parenthesis", "("))
             self.parenthesis_ratio += 1
             return
         elif self.unparsed_characters[-1] == "-":
             self.unparsed_characters = []
             self.parsed_tokens.append(Token("sign", "-"))
-            self.parsed_tokens.append(Token("Parenthesis", "("))
+            self.parsed_tokens.append(Token("parenthesis", "("))
             self.parenthesis_ratio += 1
             return
         else:
@@ -211,35 +219,40 @@ class Scanner:
                     )
                 else:
                     self.parseUnparsedCharacters()
-                    self.parsed_tokens.append(Token("Parenthesis", ")"))
+                    self.parsed_tokens.append(Token("parenthesis", ")"))
                     self.parenthesis_ratio -= 1
                     return
             else:
-                if self.parsed_tokens[-1].value != ")" and self.parsed_tokens[-1].token_tag != 'variable':
+                if (
+                    self.parsed_tokens[-1].value != ")"
+                    and self.parsed_tokens[-1].token_tag != "variable"
+                ):
                     raise Exception(
                         f"')' sign cannot be placed after {self.parsed_tokens[-1].value} sign at index {index}"
                     )
                 else:
-                    self.parsed_tokens.append(Token("Parenthesis", ")"))
+                    self.parsed_tokens.append(Token("parenthesis", ")"))
                     self.parenthesis_ratio -= 1
                     return
 
     def scanVariable(self, variable: str, index: int):
         # assume that variable is single character
         if len(self.unparsed_characters) > 0:
-            if self.unparsed_characters[-1] == '-':
+            if self.unparsed_characters[-1] == "-":
                 self.unparsed_characters.clear()
-                self.parsed_tokens.append(Token("sign", '-'))
+                self.parsed_tokens.append(Token("sign", "-"))
                 self.parsed_tokens.append(Token("variable", variable))
             else:
-                raise Exception(f"Cannot place a variable after a number at index {index}")
+                raise Exception(
+                    f"Cannot place a variable after a number at index {index}"
+                )
             return
         if len(self.parsed_tokens) > 0:
             if self.parsed_tokens[-1].value == ")":
                 raise Exception(
                     f"Cannot place a variable after a closed parenthesis at index {index}"
                 )
-            if self.parsed_tokens[-1].token_tag == 'variable':
+            if self.parsed_tokens[-1].token_tag == "variable":
                 raise Exception(
                     f"Cannot place a variable after another variable at index {index}"
                 )
@@ -258,22 +271,21 @@ class Scanner:
                 f"Opened parenthesis have not been closed at index {index}!"
             )
         if self.unparsed_characters:
-            if self.unparsed_characters[-1] == '-':
+            if self.unparsed_characters[-1] == "-":
                 raise Exception(
                     f"Cannot place a equals sign after '-' sign at index {index}"
                 )
             else:
                 self.parseUnparsedCharacters()
-                self.parsed_tokens.append(Token('equals sign', '='))
+                self.parsed_tokens.append(Token("equals sign", "="))
                 return
         if self.parsed_tokens:
-            if self.parsed_tokens[-1].token_tag == 'sign':
+            if self.parsed_tokens[-1].token_tag == "sign":
                 raise Exception(
                     f"Cannot place a equals sign after {self.parsed_tokens[-1].value} sign at index {index}"
                 )
 
-        self.parsed_tokens.append(Token('equals sign', '='))
-
+        self.parsed_tokens.append(Token("equals sign", "="))
 
     def parseUnparsedCharacters(self):
         string_number = "".join(self.unparsed_characters)
@@ -283,3 +295,30 @@ class Scanner:
     def printTokens(self):
         for token in self.parsed_tokens:
             print(token.token_tag, " ", token.value)
+
+    def colourTokens(self, out_path: str):
+        with open(out_path, "w") as fout:
+            fout.write("<div contenteditable>")
+            for parsed_token in self.parsed_tokens:
+                if parsed_token.token_tag == "variable":
+                    fout.write(
+                        '<span style="color:#ff0000">%s</span>' % parsed_token.value
+                    )
+                if parsed_token.token_tag == "sign":
+                    fout.write(
+                        '<span style="color:#00ff00">%s</span>' % parsed_token.value
+                    )
+                if parsed_token.token_tag == "parenthesis":
+                    fout.write(
+                        '<span style="color:#0000ff">%s</span>' % parsed_token.value
+                    )
+                if parsed_token.token_tag == "equals sign":
+                    fout.write(
+                        '<span style="color:#0f0f00">%s</span>' % parsed_token.value
+                    )
+                if parsed_token.token_tag == "integer":
+                    fout.write(
+                        '<span style="color:#00f0f0">%s</span>' % parsed_token.value
+                    )
+
+            fout.write("</div>")

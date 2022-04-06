@@ -15,3 +15,4 @@ if __name__ == "__main__":
     else:
         scanner.scan_file(path_to_scanned_file)
         scanner.printTokens()
+        scanner.colourTokens("out.html")
