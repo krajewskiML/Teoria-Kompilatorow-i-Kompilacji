@@ -2,9 +2,10 @@ import argparse
 import os
 
 from Scanner import Scanner
+from ScannerV2 import IdxYieldingScanner
 
 if __name__ == "__main__":
-    scanner = Scanner()
+    scanner = IdxYieldingScanner()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--scan", "-s", type=str)
