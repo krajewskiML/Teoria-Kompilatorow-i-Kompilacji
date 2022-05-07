@@ -12,12 +12,12 @@
 
 ## Założenia programu
 
-1. Cele programu:
-  a. Stworzenie pliku MP3 na podstawie ciągu instrukcji podanych w pliku wejściowym
+1. Cele programu:\
+  a. Stworzenie pliku MP3 na podstawie ciągu instrukcji podanych w pliku wejściowym\
   b. Możliwość odsłuchu utworzonego utworu
-2. Rodzaj translatora:
+2. Rodzaj translatora:\
   a. Kompilator
-3. Planowany wynik działania programu:
+3. Planowany wynik działania programu:\
   a. Kompilacja pliku wejściowego do formatu MP3, WAV
-4. Język implementacji:
+4. Język implementacji:\
   a. Python
