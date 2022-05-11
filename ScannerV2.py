@@ -44,7 +44,7 @@ class IdxYieldingScanner:
                 index, token = index + 1, Token("comma", chars[index])
             else:
                 raise Exception(
-                    f"unnknown character: {chars[index]} at {index} in line {line + 1}"
+                    f"unknown character: {chars[index]} at {index} in line {line + 1}"
                 )
 
             scanned_tokens.append(token)
