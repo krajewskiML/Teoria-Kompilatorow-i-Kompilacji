@@ -10,7 +10,7 @@ function_final: 'final' block;
 
 block: '{' line* '}';
 
-return_block: '{' line* RETURN IDENTIFIER'}'
+return_block: '{' line* RETURN IDENTIFIER'}';
 
 line: statement
      | if_statement
@@ -24,23 +24,22 @@ if_statement: IF '(' expression ')' block (ELIF '(' expression ')' block)* (ELSE
 
 while_statement: WHILE '(' expression ')' block;
 
-for_statement: FOR '(' assignment ';' expression ';' block ')' block;
+for_statement: FOR '(' assignment ';' expression ';' expression (',' expression)* ')' block;
 
 assignment: IDENTIFIER '=' expression;
 
-function_call: IDENTIFIER '('  ')';
+function_call: IDENTIFIER '(' parameters ')';
 
-expression:
-    constant
-    | IDENTIFIER
-    | function_call
-    | '(' expression ')'
-    | expression multOp expression
-    | expression addOp expression
-    | expression compareOp expression
-    | expression boolOp expression
+expression: IDENTIFIER
+          | function_call
+          | '(' expression ')'
+          | expression multOp expression
+          | expression addOp expression
+          | expression compareOp expression
+          | expression boolOp expression
+          ;
 
-boolOp: 'and' | 'or' | 'xor';
+boolOp: 'and' | 'or';
 
 compareOp: '==' | '!=' | '>' | '<' | '>=' | '<=';
 
@@ -48,33 +47,46 @@ addOp: '+' | '-';
 
 multOp: '*' | '/' | '%';
 
-var_definition: bool_definition | float_definition | int_definition | sound_definition;
+var_definition: bool_definition
+              | float_definition
+              | int_definition
+              | sound_definition
+              | synth_definition
+              | sequence_definition
+              ;
 
-bool_definition: 'bool' IDENTIFIER '=' (True | False);
+bool_definition: 'bool' IDENTIFIER '=' BOOL;
 
 float_definition: 'float' IDENTIFIER '=' FLOAT;
 
 int_definition: 'int' IDENTIFIER '=' INT;
 
-sound_definition: 'sound' IDENTIFIER '=' SOUND
+sound_definition: 'sound' IDENTIFIER '=' SOUND;
 
-synth_definition: 'synth' IDENTIFIER '=' synth_name synth_params
+synth_definition: 'synth' IDENTIFIER '=' synth_name synth_params;
 
-synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC)
+synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC);
 synth_params: '(' FREQ '=' FLOAT ',' MUL '=' FLOAT ',' ADD '=' FLOAT ')';
 
-type: INT | FLOAT |
+sequence_definition: 'seq' IDENTIFIER '=' '[' (expression (',' expression)*)* ']';
+
+type: BOOL | INT | FLOAT | SOUND | SYNTH | SEQ;
 
 IF: 'if';
 ELSE: 'else';
+ELIF: 'elif';
 FOR: 'for';
 WHILE: 'while';
-RETURN: 'return'
+RETURN: 'return';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
+BOOL: TRUE | FALSE;
 INT: [+-]?[0-9]+;
 FLOAT: [+-]?([0-9]*[.])?[0-9]+;
+
+TRUE: 'True';
+FALSE: 'False';
 
 SINE: 'sine';
 LFO: 'lfo';
@@ -88,5 +100,5 @@ ADD: 'add';
 
 SOUND: 'sound';
 SYNTH: 'synth';
-SEQ: '[' (expression (',' expression)*)* ']'; # seq
-CHANNEL: '#' INTEGER;
+SEQ: 'sequence';
+CHANNEL: '#' INT;
