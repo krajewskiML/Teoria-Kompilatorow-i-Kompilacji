@@ -21,3 +21,6 @@
   a. Kompilacja pliku wejściowego do formatu MP3, WAV
 4. Język implementacji:\
   a. Python
+
+## Opis tokenów oraz gramatyka formatu
+  [Gramatyka oraz opis tokenów](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Grammar/synth.g4) w formacie ANTLR
