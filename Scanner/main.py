@@ -1,7 +1,6 @@
 import argparse
 import os
 
-from Scanner import Scanner
 from ScannerV2 import IdxYieldingScanner
 
 if __name__ == "__main__":

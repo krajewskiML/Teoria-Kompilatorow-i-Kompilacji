@@ -6,7 +6,9 @@ function: type IDENTIFIER '(' parameters ')' return_block;
 
 parameters: (expression (',' expression)*)?;
 
-function_final: 'final' block;
+function_final: 'final' bpm_definition block;
+
+bpm_definition: BPM '=' INT;
 
 block: '{' line* '}';
 
@@ -24,28 +26,32 @@ if_statement: IF '(' expression ')' block (ELIF '(' expression ')' block)* (ELSE
 
 while_statement: WHILE '(' expression ')' block;
 
-for_statement: FOR '(' assignment ';' expression ';' expression (',' expression)* ')' block;
+for_statement: FOR '(' var_definition ';' expression ';' expression (',' expression)* ')' block;
 
 assignment: IDENTIFIER '=' expression;
 
 function_call: IDENTIFIER '(' parameters ')';
 
 expression: IDENTIFIER
+          | var_definition
           | function_call
           | '(' expression ')'
-          | expression multOp expression
-          | expression addOp expression
-          | expression compareOp expression
-          | expression boolOp expression
+          | expression mult_op expression
+          | expression add_op expression
+          | expression compare_op expression
+          | expression bool_op expression
+          | CHANNEL chann_op expression
           ;
 
-boolOp: 'and' | 'or';
+bool_op: 'and' | 'or';
 
-compareOp: '==' | '!=' | '>' | '<' | '>=' | '<=';
+compare_op: '==' | '!=' | '>' | '<' | '>=' | '<=';
 
-addOp: '+' | '-';
+add_op: '+' | '-';
 
-multOp: '*' | '/' | '%';
+mult_op: '*' | '/' | '%';
+
+chann_op: 'append' | 'remove';
 
 var_definition: bool_definition
               | float_definition
@@ -63,10 +69,11 @@ int_definition: 'int' IDENTIFIER '=' INT;
 
 sound_definition: 'sound' IDENTIFIER '=' SOUND;
 
-synth_definition: 'synth' IDENTIFIER '=' synth_name synth_params;
+synth_definition: 'synth' IDENTIFIER '=' synth_name '(' synth_params* ')';
 
-synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC);
-synth_params: '(' FREQ '=' FLOAT ',' MUL '=' FLOAT ',' ADD '=' FLOAT ')';
+synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
+
+synth_params: FREQ '=' FLOAT | MUL '=' FLOAT | ADD '=' FLOAT;
 
 sequence_definition: 'seq' IDENTIFIER '=' '[' (expression (',' expression)*)* ']';
 
@@ -93,6 +100,7 @@ LFO: 'lfo';
 SUPERSAW: 'supersaw';
 FASTSINE: 'fastsine';
 RCOSC: 'rscosc';
+PAUSE: 'pause';
 
 FREQ: 'freq';
 MUL: 'mul';
@@ -102,3 +110,5 @@ SOUND: 'sound';
 SYNTH: 'synth';
 SEQ: 'sequence';
 CHANNEL: '#' INT;
+
+BPM: 'BPM';
