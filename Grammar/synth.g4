@@ -85,9 +85,9 @@ ELIF: 'elif';
 FOR: 'for';
 WHILE: 'while';
 RETURN: 'return';
-
-IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
-
+IN: 'in';
+RANGE: 'range';
+FINAL: 'final';
 BOOL: 'true' | 'false';
 INT: [+-]?[0-9]+;
 FLOAT: [+-]?([0-9]*[.])?[0-9]+;
@@ -117,5 +117,7 @@ RB: '}';
 COMMA: ',';
 EQUALS: '=';
 SEMICOLON: ';';
+
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
 SPACE: [ \t\n\r] -> skip;
