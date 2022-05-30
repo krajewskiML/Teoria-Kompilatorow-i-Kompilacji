@@ -2,17 +2,17 @@ grammar synth;
 
 program: function* function_final EOF;
 
-function: type IDENTIFIER '(' parameters ')' return_block;
+function: type IDENTIFIER LP (var_definition (COMMA  var_definition)*)? RP return_block;
 
-parameters: (expression (',' expression)*)?;
+parameters: (expression (COMMA expression)*)?;
 
 function_final: FINAL bpm_definition block;
 
-bpm_definition: BPM '=' INT;
+bpm_definition: BPM EQUALS INT;
 
-block: '{' line* '}';
+block: LB line* RB;
 
-return_block: '{' line* RETURN IDENTIFIER'}';
+return_block: LB line* RETURN expression RB;
 
 line: statement
      | if_statement
@@ -20,27 +20,26 @@ line: statement
      | for_statement
      ;
 
-statement: (var_definition | assignment | function_call) ';' ;
+statement: (var_definition | assignment | var_definition_assignment) SEMICOLON ;
 
-if_statement: IF '(' expression ')' block (ELIF '(' expression ')' block)* (ELSE block)?;
+if_statement: IF LP expression RP block (ELIF LP expression RP block)* (ELSE block)?;
 
-while_statement: WHILE '(' expression ')' block;
+while_statement: WHILE LP expression RP block;
 
-for_statement: FOR '(' var_definition ';' expression ';' expression (',' expression)* ')' block;
+for_statement: FOR LP IDENTIFIER IN (RANGE INT RP | SEQ) block;
 
-assignment: IDENTIFIER '=' expression;
+assignment: IDENTIFIER EQUALS expression;
 
-function_call: IDENTIFIER '(' parameters ')';
+function_call: IDENTIFIER LP parameters RP;
 
 expression: IDENTIFIER
-          | var_definition
           | function_call
-          | '(' expression ')'
+          | LP expression RP
           | expression mult_op expression
           | expression add_op expression
           | expression compare_op expression
           | expression bool_op expression
-          | CHANNEL chann_op expression
+          | value
           ;
 
 bool_op: 'and' | 'or';
@@ -53,29 +52,33 @@ mult_op: '*' | '/' | '%';
 
 chann_op: 'append' | 'remove';
 
-var_definition: bool_definition
-              | float_definition
-              | int_definition
-              | sound_definition
-              | synth_definition
-              | sequence_definition
-              ;
+var_definition: type IDENTIFIER;
 
-bool_definition: 'bool' IDENTIFIER '=' BOOL;
+var_definition_assignment: bool_definition
+                    | float_definition
+                    | int_definition
+                    | sound_definition
+                    | synth_definition
+                    | sequence_definition
+                    ;
 
-float_definition: 'float' IDENTIFIER '=' FLOAT;
+bool_definition: 'bool' IDENTIFIER EQUALS BOOL;
 
-int_definition: 'int' IDENTIFIER '=' INT;
+float_definition: 'float' IDENTIFIER EQUALS FLOAT;
 
-sound_definition: 'sound' IDENTIFIER '=' SOUND;
+int_definition: 'int' IDENTIFIER EQUALS INT;
 
-synth_definition: 'synth' IDENTIFIER '=' synth_name '(' synth_params* ')';
+sound_definition: 'sound' IDENTIFIER EQUALS SOUND;
+
+synth_definition: 'synth' IDENTIFIER EQUALS synth_name LP synth_params* RP;
 
 synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
 
-synth_params: FREQ '=' FLOAT | MUL '=' FLOAT | ADD '=' FLOAT;
+synth_params: FREQ EQUALS FLOAT | MUL EQUALS FLOAT | ADD EQUALS FLOAT;
 
-sequence_definition: 'seq' IDENTIFIER '=' '[' (expression (',' expression)*)* ']';
+sequence_definition: 'seq' IDENTIFIER EQUALS '[' (expression (COMMA expression)*)* ']';
+
+type: 'bool' | 'float' | 'int' | 'sound' | 'synth' | 'seq';
 
 value: BOOL | INT | FLOAT | SOUND | SYNTH | SEQ;
 
