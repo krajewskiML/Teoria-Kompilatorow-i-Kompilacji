@@ -6,7 +6,7 @@ function: type IDENTIFIER '(' parameters ')' return_block;
 
 parameters: (expression (',' expression)*)?;
 
-function_final: 'final' bpm_definition block;
+function_final: FINAL bpm_definition block;
 
 bpm_definition: BPM '=' INT;
 
@@ -77,7 +77,7 @@ synth_params: FREQ '=' FLOAT | MUL '=' FLOAT | ADD '=' FLOAT;
 
 sequence_definition: 'seq' IDENTIFIER '=' '[' (expression (',' expression)*)* ']';
 
-type: BOOL | INT | FLOAT | SOUND | SYNTH | SEQ;
+value: BOOL | INT | FLOAT | SOUND | SYNTH | SEQ;
 
 IF: 'if';
 ELSE: 'else';
@@ -88,12 +88,9 @@ RETURN: 'return';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
-BOOL: TRUE | FALSE;
+BOOL: 'true' | 'false';
 INT: [+-]?[0-9]+;
 FLOAT: [+-]?([0-9]*[.])?[0-9]+;
-
-TRUE: 'True';
-FALSE: 'False';
 
 SINE: 'sine';
 LFO: 'lfo';
@@ -109,6 +106,16 @@ ADD: 'add';
 SOUND: 'sound';
 SYNTH: 'synth';
 SEQ: 'sequence';
-CHANNEL: '#' INT;
+CHANNEL: '#' [0-9]+;
 
 BPM: 'BPM';
+
+LP: '(';
+RP: ')';
+LB: '{';
+RB: '}';
+COMMA: ',';
+EQUALS: '=';
+SEMICOLON: ';';
+
+SPACE: [ \t\n\r] -> skip;
