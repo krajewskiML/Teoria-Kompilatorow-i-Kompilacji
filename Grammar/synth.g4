@@ -4,33 +4,34 @@ program: function* function_final EOF;
 
 function: type IDENTIFIER LP (var_definition (COMMA  var_definition)*)? RP return_block;
 
-parameters: (expression (COMMA expression)*)?;
+return_block: LB line* RETURN expression SEMICOLON RB;
 
 function_final: FINAL bpm_definition block;
 
-bpm_definition: BPM EQUALS INT;
+bpm_definition: BPM IS INT;
 
 block: LB line* RB;
-
-return_block: LB line* RETURN expression RB;
 
 line: statement
      | if_statement
      | while_statement
      | for_statement
+     | print_statement
      ;
 
-statement: (var_definition | assignment | var_definition_assignment) SEMICOLON ;
+statement: (var_definition | var_definition_assignment) SEMICOLON ;
 
 if_statement: IF LP expression RP block (ELIF LP expression RP block)* (ELSE block)?;
 
 while_statement: WHILE LP expression RP block;
 
-for_statement: FOR LP IDENTIFIER IN (RANGE INT RP | SEQ) block;
+for_statement: FOR LP IDENTIFIER IN (RANGE INT | IDENTIFIER) RP block ;
 
-assignment: IDENTIFIER EQUALS expression;
+print_statement: PRINT LP expression RP SEMICOLON;
 
 function_call: IDENTIFIER LP parameters RP;
+
+parameters: (expression (COMMA expression)*)?;
 
 expression: IDENTIFIER
           | function_call
@@ -42,45 +43,33 @@ expression: IDENTIFIER
           | value
           ;
 
-bool_op: 'and' | 'or';
+bool_op: ADD | OR;
 
-compare_op: '==' | '!=' | '>' | '<' | '>=' | '<=';
+compare_op: EQUALS | NOT_EQUALS | GT | LT | GOET | LOET;
 
-add_op: '+' | '-';
+add_op: ADDITION | SUBTRACTION;
 
-mult_op: '*' | '/' | '%';
+mult_op: MULTIPLICATION | DIVISION | MODULO;
 
-chann_op: 'append' | 'remove';
+chann_op: APPEND | REMOVE;
 
 var_definition: type IDENTIFIER;
 
-var_definition_assignment: bool_definition
-                    | float_definition
-                    | int_definition
-                    | sound_definition
-                    | synth_definition
-                    | sequence_definition
-                    ;
-
-bool_definition: 'bool' IDENTIFIER EQUALS BOOL;
-
-float_definition: 'float' IDENTIFIER EQUALS FLOAT;
-
-int_definition: 'int' IDENTIFIER EQUALS INT;
-
-sound_definition: 'sound' IDENTIFIER EQUALS SOUND;
-
-synth_definition: 'synth' IDENTIFIER EQUALS synth_name LP synth_params* RP;
+var_definition_assignment: var_definition IS expression
+                         | IDENTIFIER IS expression
+                         ;
 
 synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
 
-synth_params: FREQ EQUALS FLOAT | MUL EQUALS FLOAT | ADD EQUALS FLOAT;
+synth_params: FREQ IS FLOAT | MUL IS FLOAT | ADD IS FLOAT;
 
-sequence_definition: 'seq' IDENTIFIER EQUALS '[' (expression (COMMA expression)*)* ']';
+synth_constructor: synth_name LP synth_params* RP;
 
-type: 'bool' | 'float' | 'int' | 'sound' | 'synth' | 'seq';
+sequence_constructor: LSB (expression (COMMA expression)*)* RSB;
 
-value: BOOL | INT | FLOAT | SOUND | SYNTH | SEQ;
+type: BOOL_TYPE | FLOAT_TYPE | INT_TYPE | SOUND_TYPE | SYNTH_TYPE | SEQUENCE_TYPE;
+
+value: BOOL | INT | FLOAT | SOUND | synth_constructor | sequence_constructor;
 
 IF: 'if';
 ELSE: 'else';
@@ -91,9 +80,18 @@ RETURN: 'return';
 IN: 'in';
 RANGE: 'range';
 FINAL: 'final';
+PRINT: 'print';
+
 BOOL: 'true' | 'false';
 INT: [+-]?[0-9]+;
 FLOAT: [+-]?([0-9]*[.])?[0-9]+;
+
+BOOL_TYPE: 'bool';
+INT_TYPE: 'int';
+FLOAT_TYPE: 'float';
+SOUND_TYPE: 'sound';
+SYNTH_TYPE: 'synth';
+SEQUENCE_TYPE: 'seq';
 
 SINE: 'sine';
 LFO: 'lfo';
@@ -106,19 +104,35 @@ FREQ: 'freq';
 MUL: 'mul';
 ADD: 'add';
 
-SOUND: 'sound';
-SYNTH: 'synth';
-SEQ: 'sequence';
+SOUND: ["][a-zA-Z0-9_]+.[m][p][3]["];
 CHANNEL: '#' [0-9]+;
 
 BPM: 'BPM';
 
+AND: 'and';
+OR: 'or';
+EQUALS: '==';
+NOT_EQUALS: '!=';
+GT: '>';
+LT: '<';
+GOET: '>=';
+LOET: '<=';
+ADDITION: '+';
+SUBTRACTION: '-';
+MULTIPLICATION: '*';
+DIVISION: '/';
+MODULO: '%';
+APPEND: 'append';
+REMOVE: 'remove';
+
 LP: '(';
 RP: ')';
+LSB: '[';
+RSB: ']';
 LB: '{';
 RB: '}';
 COMMA: ',';
-EQUALS: '=';
+IS: '=';
 SEMICOLON: ';';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
