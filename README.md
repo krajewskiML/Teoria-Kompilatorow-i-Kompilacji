@@ -13,14 +13,13 @@
 ## Założenia programu
 
 1. Cele programu:\
-  a. Stworzenie pliku MP3 na podstawie ciągu instrukcji podanych w pliku wejściowym\
-  b. Możliwość odsłuchu utworzonego utworu
+  a. Stworzenie pliku MP3 na podstawie ciągu instrukcji podanych w pliku wejściowym
 2. Rodzaj translatora:\
-  a. Kompilator
-3. Planowany wynik działania programu:\
-  a. Kompilacja pliku wejściowego do formatu MP3, WAV
-4. Język implementacji:\
+  a. Generator plików w formacie MP3
+3. Język implementacji:\
   a. Python
+4. Wykorzystany generator parserów:\
+  a. [ANTLR v4](https://www.antlr.org)
 
 ## Opis tokenów oraz gramatyka formatu
-  [Gramatyka oraz opis tokenów](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Grammar/synth.g4) w formacie ANTLR
+  [Gramatyka oraz opis tokenów](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Grammar/synth.g4)
