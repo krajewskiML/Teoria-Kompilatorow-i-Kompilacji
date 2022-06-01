@@ -43,7 +43,7 @@ expression: IDENTIFIER
           | value
           ;
 
-bool_op: ADD | OR;
+bool_op: AND | OR;
 
 compare_op: EQUALS | NOT_EQUALS | GT | LT | GOET | LOET;
 
