@@ -27,4 +27,12 @@ class VariableContainer:
 
         return self.variables[name].value
 
+    def get_type(self, name):
+        if name not in self.variables:
+            raise Exception(f"{name} is not defined in this scope")
+        return self.variables[name].type
+
+    def remove_variable(self, name):
+        self.variables.pop(name)
+
 

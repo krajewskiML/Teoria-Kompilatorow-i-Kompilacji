@@ -22,8 +22,6 @@ def main():
     visitor = CustomSynthVisitor()
     visitor.visit(tree)
 
-    a = 9
-
 
 if __name__ == "__main__":
     main()
