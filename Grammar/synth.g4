@@ -21,11 +21,13 @@ line: statement
 
 statement: (var_definition | var_definition_assignment) SEMICOLON ;
 
-if_statement: IF LP expression RP block (ELIF LP expression RP block)* (ELSE block)?;
+if_statement: IF LP logic_expression RP block (ELIF LP logic_expression RP block)* (ELSE block)?;
 
-while_statement: WHILE LP expression RP block;
+while_statement: WHILE LP logic_expression RP block;
 
-for_statement: FOR LP IDENTIFIER IN (RANGE INT | IDENTIFIER) RP block ;
+for_statement: FOR LP IDENTIFIER IN range_statement RP block ;
+
+range_statement: RANGE LP (math_expression COMMA)? (math_expression COMMA)? math_expression RP;
 
 print_statement: PRINT LP expression RP SEMICOLON;
 

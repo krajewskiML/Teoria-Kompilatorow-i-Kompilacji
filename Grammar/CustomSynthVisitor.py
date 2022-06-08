@@ -5,6 +5,9 @@ from VariableContainer import VariableContainer, Variable
 from FunctionContainer import FunctionContainer, Function, VariablePlaceholder
 from antlr4 import *
 
+import numpy as np
+from copy import deepcopy
+
 
 class CustomSynthVisitor(synthVisitor):
     def __init__(self, ):
@@ -303,3 +306,24 @@ class CustomSynthVisitor(synthVisitor):
         self.variables = outer_scope_variables
         return return_val
 
+    def visitFunction(self, ctx:synthParser.FunctionContext):
+        children = ctx.children
+        variable_type = self.visitType(children[0])
+        variable_name = children[1].symbol.text
+        return_block = children[-1]
+        # 0 1 2 (3) 4 (5) 6 7
+        num_of_variables = (len(children) - 5) // 2 + 1 if len(children) > 5 else 0
+        variables = [
+            VariablePlaceholder(children[3+i*2].children[1].symbol.text, self.visitType(children[3+i*2].children[0]))
+            for i in range(num_of_variables)
+        ]
+        func = Function(variables, variable_type, return_block)
+        self.functions.declare_function(variable_name, func)
+
+    def visitReturn_block(self, ctx:synthParser.Return_blockContext):
+        children = ctx.children
+        num_of_lines = len(children) - 5
+        for i in range(num_of_lines):
+            self.visitLine(children[i + 1])
+
+        return self.visitExpression(children[-3])
