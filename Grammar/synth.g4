@@ -35,13 +35,26 @@ parameters: (expression (COMMA expression)*)?;
 
 expression: IDENTIFIER
           | function_call
-          | LP expression RP
-          | expression mult_op expression
-          | expression add_op expression
-          | expression compare_op expression
-          | expression bool_op expression
-          | value
+          | logic_expression
+          | math_expression
           ;
+
+logic_expression: IDENTIFIER
+                | function_call
+                | LP logic_expression RP
+                | math_expression compare_op math_expression
+                | logic_expression bool_op logic_expression
+                | BOOL
+                ;
+
+math_expression: IDENTIFIER
+                | function_call
+                | LP math_expression RP
+                | math_expression mult_op math_expression
+                | math_expression add_op math_expression
+                | INT
+                | FLOAT
+                ;
 
 bool_op: AND | OR;
 
@@ -55,8 +68,9 @@ chann_op: APPEND | REMOVE;
 
 var_definition: type IDENTIFIER;
 
-var_definition_assignment: var_definition IS expression
-                         | IDENTIFIER IS expression
+var_definition_assignment: IDENTIFIER IS expression
+                         | (INT_TYPE | FLOAT_TYPE) IDENTIFIER IS math_expression
+                         | BOOL_TYPE IDENTIFIER IS logic_expression
                          ;
 
 synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
