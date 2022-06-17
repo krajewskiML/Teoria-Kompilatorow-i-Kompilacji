@@ -3,6 +3,7 @@ from Tools.synthParser import synthParser
 from Tools.synthLexer import synthLexer
 from VariableContainer import VariableContainer, Variable
 from FunctionContainer import FunctionContainer, Function, VariablePlaceholder
+from SoundObject import SoundObject
 from antlr4 import *
 
 import numpy as np
@@ -56,58 +57,6 @@ class CustomSynthVisitor(synthVisitor):
             return self.visitLogic_expression(child)
         if child.getRuleIndex() == synthParser.RULE_math_expression:
             return self.visitMath_expression(child)
-        # if children_number == 1:
-        #     # IDENTIFIER
-        #     if isinstance(children[0], TerminalNode):
-        #         var_name = children[0].symbol.text
-        #         return self.variables.get_value(var_name)
-        #     # function call
-        #     # value
-        #     if children[0].getRuleIndex() == synthParser.RULE_value:
-        #         return self.visitValue(children[0])
-        #     pass
-        # elif children_number == 3:
-        #     # parenthesis
-        #     if children[1].getRuleIndex() == synthParser.RULE_expression:
-        #         return self.visitExpression(children[1])
-        #     # multiplication
-        #     if children[1].getRuleIndex() == synthParser.RULE_mult_op:
-        #         sign = self.visitMult_op(children[1])
-        #         if sign == synthParser.MULTIPLICATION:
-        #             return self.visitExpression(children[0]) * self.visitExpression(children[2])
-        #         if sign == synthParser.DIVISION:
-        #             return self.visitExpression(children[0]) / self.visitExpression(children[2])
-        #         if sign == synthParser.MODULO:
-        #             return self.visitExpression(children[0]) % self.visitExpression(children[2])
-        #     # addition
-        #     if children[1].getRuleIndex() == synthParser.RULE_add_op:
-        #         sign = self.visitAdd_op(children[1])
-        #         if sign == synthParser.ADDITION:
-        #             return self.visitExpression(children[0]) + self.visitExpression(children[2])
-        #         if sign == synthParser.SUBTRACTION:
-        #             return self.visitExpression(children[0]) - self.visitExpression(children[2])
-        #     # compare
-        #     if children[1].getRuleIndex() == synthParser.RULE_compare_op:
-        #         sign = self.visitCompare_op(children[1])
-        #         if sign == synthParser.EQUALS:
-        #             return self.visitExpression(children[0]) == self.visitExpression(children[2])
-        #         if sign == synthParser.NOT_EQUALS:
-        #             return self.visitExpression(children[0]) != self.visitExpression(children[2])
-        #         if sign == synthParser.GT:
-        #             return self.visitExpression(children[0]) > self.visitExpression(children[2])
-        #         if sign == synthParser.GOET:
-        #             return self.visitExpression(children[0]) >= self.visitExpression(children[2])
-        #         if sign == synthParser.LT:
-        #             return self.visitExpression(children[0]) < self.visitExpression(children[2])
-        #         if sign == synthParser.LOET:
-        #             return self.visitExpression(children[0]) <= self.visitExpression(children[2])
-        #     # bool
-        #     if children[1].getRuleIndex() == synthParser.RULE_bool_op:
-        #         sign = self.visitBool_op(children[1])
-        #         if sign == synthParser.AND:
-        #             return self.visitExpression(children[0]) and self.visitExpression(children[2])
-        #         if sign == synthParser.OR:
-        #             return self.visitExpression(children[0]) or self.visitExpression(children[2])
 
     def visitLogic_expression(self, ctx: synthParser.Logic_expressionContext):
         children = ctx.children
@@ -327,3 +276,22 @@ class CustomSynthVisitor(synthVisitor):
             self.visitLine(children[i + 1])
 
         return self.visitExpression(children[-3])
+
+    def visitSequence_constructor(self, ctx:synthParser.Sequence_constructorContext):
+        children = ctx.children
+        num_of_expressions = (len(children) - 2) // 2 + 1 if (len(children) - 2) > 0 else 0
+        # [ a , b, c ]
+        expressions_indices = [1 + i * 2 for i in range(num_of_expressions)]
+        expressions = [self.visitSound_expression(children[idx]) for idx in expressions_indices]
+
+    def visitSound_expression(self, ctx:synthParser.Sound_expressionContext):
+        children = ctx.children
+        if len(children):
+            return self.visitSound_expression(children[1])
+        else:
+            child = children[0]
+            if isinstance(child, TerminalNode):
+                var_name = child.symbol.text
+                return self.variables.get_value(var_name)
+            if child.getRuleIndex() == synthParser.RULE_synth_constructor:
+                a = 0

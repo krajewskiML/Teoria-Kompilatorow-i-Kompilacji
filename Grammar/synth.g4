@@ -2,7 +2,7 @@ grammar synth;
 
 program: function* function_final EOF;
 
-function: type IDENTIFIER LP (var_definition (COMMA  var_definition)*)? RP return_block;
+function: type IDENTIFIER LP (var_definition (COMMA var_definition)*)? RP return_block;
 
 return_block: LB line* RETURN expression SEMICOLON RB;
 
@@ -39,6 +39,8 @@ expression: IDENTIFIER
           | function_call
           | logic_expression
           | math_expression
+          | sound_expression
+          | sequence_expression
           ;
 
 logic_expression: IDENTIFIER
@@ -57,6 +59,24 @@ math_expression: IDENTIFIER
                 | INT
                 | FLOAT
                 ;
+
+sound_expression: IDENTIFIER
+                | function_call
+                | LP sound_expression RP
+                | synth_constructor
+                | SOUND
+                ;
+
+sequence_expression: IDENTIFIER
+                   | function_call
+                   | sequence_constructor
+                   | sound_expression ADDITION sound_expression
+                   | sound_expression MULTIPLICATION math_expression
+                   | math_expression MULTIPLICATION sound_expression
+                   | sequence_expression ADDITION sequence_expression
+                   | sequence_expression MULTIPLICATION math_expression
+                   | math_expression MULTIPLICATION sequence_expression
+                   ;
 
 bool_op: AND | OR;
 
@@ -81,7 +101,7 @@ synth_params: FREQ IS FLOAT | MUL IS FLOAT | ADD IS FLOAT;
 
 synth_constructor: synth_name LP synth_params* RP;
 
-sequence_constructor: LSB (expression (COMMA expression)*)* RSB;
+sequence_constructor: LSB (sound_expression (COMMA sound_expression)*)? RSB;
 
 type: BOOL_TYPE | FLOAT_TYPE | INT_TYPE | SOUND_TYPE | SYNTH_TYPE | SEQUENCE_TYPE;
 
@@ -99,8 +119,8 @@ FINAL: 'final';
 PRINT: 'print';
 
 BOOL: 'true' | 'false';
-INT: [+-]?[0-9]+;
-FLOAT: [+-]?([0-9]*[.])?[0-9]+;
+INT: [-]?[0-9]+;
+FLOAT: [-]?([0-9]*[.])?[0-9]+;
 
 BOOL_TYPE: 'bool';
 INT_TYPE: 'int';
@@ -109,18 +129,18 @@ SOUND_TYPE: 'sound';
 SYNTH_TYPE: 'synth';
 SEQUENCE_TYPE: 'seq';
 
-SINE: 'sine';
-LFO: 'lfo';
-SUPERSAW: 'supersaw';
-FASTSINE: 'fastsine';
-RCOSC: 'rscosc';
-PAUSE: 'pause';
+SINE: 'Sine';
+LFO: 'Lfo';
+SUPERSAW: 'SuperSaw';
+FASTSINE: 'Fastsine';
+RCOSC: 'RCOsc';
+PAUSE: 'Pause';
 
 FREQ: 'freq';
 MUL: 'mul';
 ADD: 'add';
 
-SOUND: ["][a-zA-Z0-9_]+.[m][p][3]["];
+SOUND: ["][a-zA-Z0-9_]+.[w][a][v]["];
 CHANNEL: '#' [0-9]+;
 
 BPM: 'BPM';
