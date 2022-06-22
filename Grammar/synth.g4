@@ -93,13 +93,14 @@ var_definition: type IDENTIFIER;
 var_definition_assignment: IDENTIFIER IS expression
                          | (INT_TYPE | FLOAT_TYPE) IDENTIFIER IS math_expression
                          | BOOL_TYPE IDENTIFIER IS logic_expression
+                         | (SOUND_TYPE  | SYNTH_TYPE) IDENTIFIER IS sound_expression
                          ;
 
 synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
 
-synth_params: FREQ IS FLOAT | MUL IS FLOAT | ADD IS FLOAT;
+synth_params: (FREQ | MUL | ADD | TIME) IS (FLOAT | INT);
 
-synth_constructor: synth_name LP synth_params* RP;
+synth_constructor: synth_name LP (synth_params (COMMA synth_params)*)? RP;
 
 sequence_constructor: LSB (sound_expression (COMMA sound_expression)*)? RSB;
 
