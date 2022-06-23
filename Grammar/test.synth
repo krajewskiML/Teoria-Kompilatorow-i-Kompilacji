@@ -1,3 +1,7 @@
+int cos(){
+    return 5;
+}
+
 final BPM = 100{
-    synth a = Sine(freq=100.0, mul=10);
+    synth a = Sine(mul=3, freq=100, add=9);
 }

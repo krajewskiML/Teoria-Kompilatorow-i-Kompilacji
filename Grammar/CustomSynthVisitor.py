@@ -3,7 +3,7 @@ from Tools.synthParser import synthParser
 from Tools.synthLexer import synthLexer
 from VariableContainer import VariableContainer, Variable
 from FunctionContainer import FunctionContainer, Function, VariablePlaceholder
-from SoundObject import SoundObject
+from SoundObject import SoundObject, SOUND_TYPES
 from antlr4 import *
 
 import numpy as np
@@ -57,6 +57,8 @@ class CustomSynthVisitor(synthVisitor):
             return self.visitLogic_expression(child)
         if child.getRuleIndex() == synthParser.RULE_math_expression:
             return self.visitMath_expression(child)
+        if child.getRuleIndex() == synthParser.RULE_function_call:
+            return self.visitFunction_call(child)
 
     def visitLogic_expression(self, ctx: synthParser.Logic_expressionContext):
         children = ctx.children
@@ -163,18 +165,21 @@ class CustomSynthVisitor(synthVisitor):
             var_value = self.visitExpression(ctx.children[2])
             self.variables.assign_value(var_name, var_value)
         else:
-            dtype = eval(ctx.children[0].symbol.text)
+            var_name = ctx.children[1].symbol.text
+            type_name = ctx.children[0].symbol.text
+            if type_name in SOUND_TYPES:
+                value = self.visitSound_expression(ctx.children[3])
+                self.variables.declare_variable(var_name, SoundObject, value)
+                return
+            dtype = eval(type_name)
             if dtype == bool:
                 value = self.visitLogic_expression(ctx.children[3])
-                var_name = ctx.children[1].symbol.text
                 self.variables.declare_variable(var_name, dtype, value)
             elif dtype == float:
                 value = self.visitMath_expression(ctx.children[3])
-                var_name = ctx.children[1].symbol.text
                 self.variables.declare_variable(var_name, dtype, value)
             elif dtype == int:
                 value = self.visitMath_expression(ctx.children[3])
-                var_name = ctx.children[1].symbol.text
                 self.variables.declare_variable(var_name, dtype, value)
 
     def visitPrint_statement(self, ctx: synthParser.Print_statementContext):
@@ -286,12 +291,38 @@ class CustomSynthVisitor(synthVisitor):
 
     def visitSound_expression(self, ctx:synthParser.Sound_expressionContext):
         children = ctx.children
-        if len(children):
+        if len(children) == 3:
             return self.visitSound_expression(children[1])
         else:
             child = children[0]
+            # IDENTIFIER
             if isinstance(child, TerminalNode):
                 var_name = child.symbol.text
                 return self.variables.get_value(var_name)
+            #
             if child.getRuleIndex() == synthParser.RULE_synth_constructor:
-                a = 0
+                a = self.visitSynth_constructor(child)
+                return a
+
+    def visitSynth_constructor(self, ctx:synthParser.Synth_constructorContext):
+        children = ctx.children
+        params = [self.visitSynth_params(child) for child in children if not isinstance(child, TerminalNode) and child.getRuleIndex() == synthParser.RULE_synth_params]
+        synth_type = self.visitSynth_name(children[0])
+        synth_dict = {
+            "type": synth_type,
+            "properties": {
+                prop[0]: prop[1]
+                for prop in params
+            }
+        }
+        return SoundObject(**synth_dict)
+
+    def visitSynth_params(self, ctx:synthParser.Synth_paramsContext):
+        children = ctx.children
+        return children[0].symbol.text, float(children[2].symbol.text)
+
+    def visitSynth_name(self, ctx:synthParser.Synth_nameContext):
+        child = ctx.children[0]
+        return child.symbol.text
+
+
