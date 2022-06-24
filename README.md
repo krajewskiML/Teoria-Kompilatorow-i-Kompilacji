@@ -22,7 +22,7 @@
   a. [ANTLR v4](https://www.antlr.org)
 
 ## Opis tokenów oraz gramatyka formatu
-  [Gramatyka oraz opis tokenów](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Grammar/synth.g4)
+  [Gramatyka oraz opis tokenów](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Synth/synth.g4)
 
 ## Opis i schemat struktury programu
 
