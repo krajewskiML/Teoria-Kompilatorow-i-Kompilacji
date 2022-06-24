@@ -117,4 +117,4 @@ final NCHANNEL = 4, DUR = 25{
 * Brak możliwości stworzenia funkcji rekurencyjnych
 * Brak dostępu do wartości uderzeń na minutę, zatem brak możliwości zmiany tempa utworu
 * Wymóg podania czasu trwania każdego wgranego dźwięku
-* Brak możliwości odsłuchu utworu przed jego wygenerowaniem
+* Brak możliwości odsłuchu utworu przed jego wygenerowaniem 
