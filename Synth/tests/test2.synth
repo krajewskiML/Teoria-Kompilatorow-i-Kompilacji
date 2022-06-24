@@ -1,0 +1,6 @@
+final NCHANNEL = 4, DUR = 25{
+
+    synth a = Sine(freq=180, add=20, mul=0.2)@10;
+    synth d = RCOsc(freq=100, add=1, mul=0.01)@10;
+    #3 append [d, a];
+}

@@ -1,0 +1,9 @@
+seq turix(int ile, float trwanie){
+    sound a = "turi.wav"@trwanie;
+    seq to_return = a * ile;
+    return to_return;
+}
+final NCHANNEL = 4, DUR = 25{
+    seq turi = turix(5, 2.85);
+    #3 append turi;
+}

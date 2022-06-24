@@ -19,7 +19,7 @@ class VariableContainer:
             raise Exception(f"{name} is not defined in this scope")
 
         type_of_var = self.variables[name].type
-        self.variables[name] = Variable(type_of_var, type_of_var(value))
+        self.variables[name] = Variable(type_of_var, value)
 
     def get_value(self, name):
         if name not in self.variables:

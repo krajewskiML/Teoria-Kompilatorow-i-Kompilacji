@@ -6,9 +6,11 @@ function: type IDENTIFIER LP (var_definition (COMMA var_definition)*)? RP return
 
 return_block: LB line* RETURN expression SEMICOLON RB;
 
-function_final: FINAL bpm_definition block;
+function_final: FINAL nchannel_definition COMMA duration_definition block;
 
-bpm_definition: BPM IS INT;
+nchannel_definition: NCHANNEL IS INT;
+
+duration_definition: DUR IS INT;
 
 block: LB line* RB;
 
@@ -19,7 +21,7 @@ line: statement
      | print_statement
      ;
 
-statement: (var_definition | var_definition_assignment) SEMICOLON ;
+statement: (var_definition | var_definition_assignment | channel_addition) SEMICOLON ;
 
 if_statement: IF LP logic_expression RP block (ELIF LP logic_expression RP block)* (ELSE block)?;
 
@@ -64,12 +66,13 @@ sound_expression: IDENTIFIER
                 | function_call
                 | LP sound_expression RP
                 | synth_constructor
-                | SOUND
+                | sound_constructor
                 ;
 
 sequence_expression: IDENTIFIER
                    | function_call
                    | sequence_constructor
+                   | LP sequence_expression RP
                    | sound_expression ADDITION sound_expression
                    | sound_expression MULTIPLICATION math_expression
                    | math_expression MULTIPLICATION sound_expression
@@ -86,27 +89,28 @@ add_op: ADDITION | SUBTRACTION;
 
 mult_op: MULTIPLICATION | DIVISION | MODULO;
 
-chann_op: APPEND | REMOVE;
-
 var_definition: type IDENTIFIER;
 
 var_definition_assignment: IDENTIFIER IS expression
                          | (INT_TYPE | FLOAT_TYPE) IDENTIFIER IS math_expression
                          | BOOL_TYPE IDENTIFIER IS logic_expression
                          | (SOUND_TYPE  | SYNTH_TYPE) IDENTIFIER IS sound_expression
+                         | SEQUENCE_TYPE IDENTIFIER IS sequence_expression
                          ;
+
+channel_addition: CHANNEL APPEND (IDENTIFIER | sequence_expression | sound_expression);
 
 synth_name: (SINE | LFO | SUPERSAW | FASTSINE | RCOSC | PAUSE);
 
-synth_params: (FREQ | MUL | ADD | TIME) IS (FLOAT | INT);
+synth_params: (FREQ | MUL | ADD) IS (FLOAT | INT);
 
-synth_constructor: synth_name LP (synth_params (COMMA synth_params)*)? RP;
+synth_constructor: synth_name LP (synth_params (COMMA synth_params)*)? RP DURATION_INDICATOR math_expression;
+
+sound_constructor: SOUND DURATION_INDICATOR math_expression;
 
 sequence_constructor: LSB (sound_expression (COMMA sound_expression)*)? RSB;
 
 type: BOOL_TYPE | FLOAT_TYPE | INT_TYPE | SOUND_TYPE | SYNTH_TYPE | SEQUENCE_TYPE;
-
-value: BOOL | INT | FLOAT | SOUND | synth_constructor | sequence_constructor;
 
 IF: 'if';
 ELSE: 'else';
@@ -131,7 +135,7 @@ SYNTH_TYPE: 'synth';
 SEQUENCE_TYPE: 'seq';
 
 SINE: 'Sine';
-LFO: 'Lfo';
+LFO: 'LFO';
 SUPERSAW: 'SuperSaw';
 FASTSINE: 'Fastsine';
 RCOSC: 'RCOsc';
@@ -144,7 +148,9 @@ ADD: 'add';
 SOUND: ["][a-zA-Z0-9_]+.[w][a][v]["];
 CHANNEL: '#' [0-9]+;
 
-BPM: 'BPM';
+NCHANNEL: 'NCHANNEL';
+
+DUR: 'DUR';
 
 AND: 'and';
 OR: 'or';
@@ -160,7 +166,7 @@ MULTIPLICATION: '*';
 DIVISION: '/';
 MODULO: '%';
 APPEND: 'append';
-REMOVE: 'remove';
+DURATION_INDICATOR: '@';
 
 LP: '(';
 RP: ')';

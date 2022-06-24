@@ -1,6 +1,5 @@
 from collections import namedtuple
 from typing import Dict
-from VariableContainer import Variable
 
 VariablePlaceholder = namedtuple("VariablePlaceHolder", ["name", "type"])
 
@@ -26,6 +25,11 @@ class FunctionContainer:
             raise Exception(f"{name} is not defined")
 
         return self.functions[name]
+
+    def get_type(self, name):
+        if name not in self.functions:
+            raise Exception(f"{name} is not defined in this scope")
+        return self.functions[name].return_type
 
 
 

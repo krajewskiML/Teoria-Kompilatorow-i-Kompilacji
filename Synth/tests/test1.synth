@@ -1,0 +1,12 @@
+final NCHANNEL = 10, DUR = 25{
+
+    sound a;
+    for(idx in range(5)){
+        if(idx % 2 == 1){
+            a = "turi.wav"@5;
+        }else{
+            a = "bajpas.wav"@5;
+        }
+        #1 append a;
+    }
+}
