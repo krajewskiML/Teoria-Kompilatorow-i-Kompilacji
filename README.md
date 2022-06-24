@@ -1,4 +1,4 @@
-# Kompilator dla języka generującego muzykę
+# Synth - Generator muzyki
 
 ## Autorzy
 
@@ -34,7 +34,7 @@ plik <b>Synth.py</b> wykorzystywany w celu uruchomienia programu, a następnie w
 
 W celu wygenerowania skanera, parsera oraz generatora dźwięków, a następnie ich obsługiwania wykorzystaliśmy bibliotekę
 `antlr4-python3-runtime`. Generowanie dźwięków, ich modulacja oraz wczytywanie własnych plików muzycznych zrealizowaliśmy
-przy użyciu biblioteki 'pyo'.
+przy użyciu biblioteki `pyo`.
 
 ## Informacje o zastosowanych metodach i algorytmach
 
@@ -67,6 +67,44 @@ w którym podajemy ścieżkę na którą plik ma zostać zapisany.
 Na przykład: `python synth.py -g tests/test3.synth -d outputs/test3.wav`
 
 ## Testy i przykłady
+
+1. test1.synth
+```
+final NCHANNEL = 10, DUR = 25{
+    sound a;
+    for(idx in range(5)){
+        if(idx % 2 == 1){
+            a = "turi.wav"@5;
+        }else{
+            a = "bajpas.wav"@5;
+        }
+        #1 append a;
+    }
+}
+```
+
+2. test2.synth
+```
+final NCHANNEL = 4, DUR = 25{
+    synth a = Sine(freq=180, add=20, mul=0.2)@10;
+    synth d = RCOsc(freq=100, add=1, mul=0.01)@10;
+    #3 append [d, a];
+}
+```
+
+3. test3.synth
+```
+seq turix(int ile, float trwanie){
+    sound a = "turi.wav"@trwanie;
+    seq to_return = a * ile;
+    return to_return;
+}
+
+final NCHANNEL = 4, DUR = 25{
+    seq turi = turix(5, 2.85);
+    #3 append turi;
+}
+```
 
 ## Możliwe rozszerzenia programu
 
