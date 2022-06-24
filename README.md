@@ -38,10 +38,33 @@ przy użyciu biblioteki 'pyo'.
 
 ## Informacje o zastosowanych metodach i algorytmach
 
-W celu uzyskania oczekiwanych rezultatów nadpisaliśmy wygenerowane metody klasy synthVisitor. Przy wykorzystaniu atrybutu children
-weryfikujemy typ naszego wierzchołka drzewa, a następnie 
+### CustomSynthVisitor
+Klasa, w której zdefiniowaliśmy jak generator ma interpretować drzewo składniowe wygenerowane przez SynthParser. Dla każdego rodzaju
+wierzchołka zdefiniowaliśmy jakie akcje ma podjąć. W celu rozdzielenia odpowiedzialności za różne funkcje generatora zaimplementowaliśmy
+także inne klasy pomocnicze.
+
+### VariableContainer
+Klasa odpowiedzialna za tworzenie, przechowywanie i odczytywanie zmiennych. Kontroluje ona również typy zmiennych oraz dba
+o to by nazwy zmiennych nie powtarzały się w żadnym zakresie.
+
+### FunctionContainer
+Klasa odpowiedzialna za definiowanie i wywoływanie funkcji. Kontroluje ona również typy zwracanych wartości.
+
+### SoundObject
+Klasa reprezentująca zmienne przechowujące dźwięk. To w niej zdefiniowane są operacje na dźwiękach.
+
+### MusicHandler
+Klasa, której zadaniem jest połączenie zmiennych dźwiękowych w finalny utwór. To tutaj jest deklarowana liczba dostępnych kanałów,
+finalna długość utworu oraz nazwa pliku wyjściowego.
 
 ## Instrukcja obsługi
+
+W celu wytworzenia pliku dźwiękowego najpierw musimy zapisać opis oczekiwanego dźwięku do pliku tekstowego stosując się
+do zasad gramatyki SYNTH. Następnie należy uruchomić skrypt [synth.py](https://github.com/krajewskiML/Teoria-Kompilatorow-i-Kompilacji/blob/master/Synth/synth.py)
+wraz z dwoma potrzebnymi argumentami `--generate` (`-g`) w którym podajemy ścieżkę do pliku z opisem dźwięków oraz argumentem `--destination` (`-d`) 
+w którym podajemy ścieżkę na którą plik ma zostać zapisany.
+
+Na przykład: `python synth.py -g tests/test3.synth -d outputs/test3.wav`
 
 ## Testy i przykłady
 
